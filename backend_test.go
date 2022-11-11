@@ -132,7 +132,6 @@ func TestBackendFactory(t *testing.T) {
 				if !tt.wantErr(t, err, "backend()") {
 					return
 				}
-
 			},
 		)
 	}
