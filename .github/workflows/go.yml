@@ -1,5 +1,5 @@
 name: Go
-on: [push,pr]
+on: [push]
 jobs:
 
   build:
@@ -22,17 +22,11 @@ jobs:
         go install github.com/golang/mock/mockgen@v1.6.0
 
     - name: Build
-      env:
-        GOPROXY: "https://proxy.golang.org"
       run: go build .
 
     - name: Generate mocks
-      env:
-        GOPROXY: "https://proxy.golang.org"
       run: |
         go generate
 
     - name: Test
-      env:
-        GOPROXY: "https://proxy.golang.org"
       run: go test -v .
