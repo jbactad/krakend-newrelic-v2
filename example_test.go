@@ -1,10 +1,11 @@
-package metrics
+package metrics_test
 
 import (
 	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	metrics "github.com/jbactad/krakend-newrelic-v2"
 	"github.com/luraproject/lura/v2/config"
 	"github.com/luraproject/lura/v2/logging"
 	"github.com/luraproject/lura/v2/proxy"
@@ -14,19 +15,25 @@ import (
 )
 
 func ExampleRegister() {
-	cfg := config.ServiceConfig{}
+	cfg := config.ServiceConfig{
+		ExtraConfig: map[string]interface{}{
+			"github_com/jbactad/krakend_newrelic_v2": map[string]interface{}{
+				"rate": 100,
+			},
+		},
+	}
 	logger := logging.NoOp
 
-	Register(context.Background(), cfg.ExtraConfig, logger)
+	metrics.Register(context.Background(), cfg.ExtraConfig, logger)
 
 	backendFactory := proxy.HTTPProxyFactory(&http.Client{})
-	backendFactory = BackendFactory("backend", backendFactory)
+	backendFactory = metrics.BackendFactory("backend", backendFactory)
 
 	pf := proxy.NewDefaultFactory(backendFactory, logger)
-	pf = ProxyFactory("proxy", pf)
+	pf = metrics.ProxyFactory("proxy", pf)
 
 	handlerFactory := router.CustomErrorEndpointHandler(logger, serverhttp.DefaultToHTTPError)
-	handlerFactory = HandlerFactory(handlerFactory)
+	handlerFactory = metrics.HandlerFactory(handlerFactory)
 
 	engine := gin.New()
 
