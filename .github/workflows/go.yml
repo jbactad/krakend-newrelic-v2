@@ -2,8 +2,8 @@ name: Go
 on: [push]
 jobs:
 
-  build:
-    name: Build
+  unit-tests:
+    name: Run Unit Tests
     runs-on: ubuntu-latest
     steps:
 
@@ -20,9 +20,6 @@ jobs:
       run: |
         go get -v -t -d ./...
         go install github.com/golang/mock/mockgen@v1.6.0
-
-    - name: Build
-      run: go build .
 
     - name: Generate mocks
       run: |
