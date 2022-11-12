@@ -28,6 +28,8 @@ jobs:
   unit-tests:
     name: Run Unit Tests
     runs-on: ubuntu-latest
+    env:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
 
     - name: Download Go
@@ -51,3 +53,6 @@ jobs:
 
     - name: Test
       run: make test-unit
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
