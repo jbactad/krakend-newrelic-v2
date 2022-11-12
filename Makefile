@@ -8,4 +8,4 @@ gen:
 	go generate
 
 test-unit:
-	go test -v .
+	go test -race -coverprofile=coverage.out -covermode=atomic
