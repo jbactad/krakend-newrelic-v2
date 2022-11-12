@@ -143,7 +143,7 @@ func TestNewProxyMiddleware(t *testing.T) {
 				proxyFactory := ProxyFactory(tt.fields.segmentName, tt.fields.nextFactory)
 
 				m, err := proxyFactory(tt.args.cfg)
-				if !tt.wantErr(t, err, fmt.Sprintf("ProxyFactory()")) {
+				if !tt.wantErr(t, err, "ProxyFactory()") {
 					return
 				}
 
