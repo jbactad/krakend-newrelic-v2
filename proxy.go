@@ -8,8 +8,6 @@ import (
 	"github.com/luraproject/lura/v2/proxy"
 )
 
-const nrCtxKey = "newRelicTransaction"
-
 // ProxyFactory creates an instrumented proxy factory
 func ProxyFactory(segmentName string, next proxy.Factory) proxy.FactoryFunc {
 	if app == nil {
