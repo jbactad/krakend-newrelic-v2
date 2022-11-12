@@ -2,6 +2,7 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/jbactad/krakend-newrelic-v2.svg)](https://pkg.go.dev/github.com/jbactad/krakend-newrelic-v2)
 ![Go](https://github.com/jbactad/krakend-newrelic-v2/actions/workflows/go.yml/badge.svg)
+[![codecov](https://codecov.io/gh/jbactad/krakend-newrelic-v2/branch/main/graph/badge.svg?token=9CCWX167AA)](https://codecov.io/gh/jbactad/krakend-newrelic-v2)
 
 A NewRelic middleware that uses the NewRelic Go Agent v3
 
