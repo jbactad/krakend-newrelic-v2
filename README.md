@@ -1,6 +1,7 @@
 # krakend-newrelic-v2
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/jbactad/krakend-newrelic-v2.svg)](https://pkg.go.dev/github.com/jbactad/krakend-newrelic-v2)
+![Go](https://github.com/jbactad/krakend-newrelic-v2/actions/workflows/go.yml/badge.svg)
 
 A NewRelic middleware that uses the NewRelic Go Agent v3
 
