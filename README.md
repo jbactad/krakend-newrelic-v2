@@ -101,3 +101,27 @@ From krakend configuration file, these are the following options you can configu
 |------|------|-------------------------------------------------------|
 | rate | int  | The rate the middlewares instrument your application. |
 
+
+## Development
+
+### Requirements
+
+To start development, make sure you have the following dependencies installed in your development environment.
+
+- golang >=v1.17
+
+### Setup
+
+Run the following to install the necessary tools to run tests.
+
+```bash
+make setup
+```
+
+### Running unit tests
+
+To run the unit tests, execute the following command.
+
+```bash
+make test-unit
+```
