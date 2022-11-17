@@ -3,6 +3,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/jbactad/krakend-newrelic-v2.svg)](https://pkg.go.dev/github.com/jbactad/krakend-newrelic-v2)
 ![Go](https://github.com/jbactad/krakend-newrelic-v2/actions/workflows/go.yml/badge.svg)
 [![codecov](https://codecov.io/gh/jbactad/krakend-newrelic-v2/branch/main/graph/badge.svg?token=9CCWX167AA)](https://codecov.io/gh/jbactad/krakend-newrelic-v2)
+[![Go Report Card](https://goreportcard.com/badge/github.com/jbactad/krakend-newrelic-v2)](https://goreportcard.com/report/github.com/jbactad/krakend-newrelic-v2)
 
 A NewRelic middleware that uses the NewRelic Go Agent v3
 
@@ -118,6 +119,12 @@ Run the following to install the necessary tools to run tests.
 
 ```bash
 make setup
+```
+
+### Generate mocks for unit tests
+
+```bash
+make gen
 ```
 
 ### Running unit tests
