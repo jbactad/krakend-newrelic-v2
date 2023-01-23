@@ -88,11 +88,18 @@ func ConfigGetter(cfg config.ExtraConfig) (Config, error) {
 
 // Register initializes the metrics collector.
 // Returns a newrelic.Application instance.
-func Register(ctx context.Context, cfg config.ExtraConfig, logger logging.Logger) *newrelic.Application {
+func Register(
+	ctx context.Context,
+	cfg config.ExtraConfig,
+	logger logging.Logger,
+) *newrelic.Application {
 	var err error
 	app, err = NewApp(
 		cfg, func() (NRApplication, error) {
-			return newrelic.NewApplication(newrelic.ConfigFromEnvironment())
+			return newrelic.NewApplication(
+				newrelic.ConfigFromEnvironment(),
+				newrelic.ConfigAppLogDecoratingEnabled(true),
+			)
 		},
 		newrelicWrapper{},
 	)
