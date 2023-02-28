@@ -27,37 +27,37 @@ func NewBackend(segmentName string, next proxy.Proxy) proxy.Proxy {
 		return next
 	}
 
-	return func(ctx context.Context, req *proxy.Request) (*proxy.Response, error) {
+	return func(ctx context.Context, proxyReq *proxy.Request) (*proxy.Response, error) {
 		tx := app.TransactionManager.TransactionFromContext(ctx)
 		if tx == nil {
-			return next(ctx, req)
+			return next(ctx, proxyReq)
 		}
 
-		requestToBackend, closer, err := toHttpRequest(req)
+		req, err := toHttpRequest(proxyReq)
 		if err != nil {
 			return nil, err
 		}
 
-		externalSegment := app.TransactionManager.StartExternalSegment(tx, requestToBackend)
-		req.Headers = requestToBackend.Header
-
-		resp, err := next(ctx, req)
-
+		externalSegment := app.TransactionManager.StartExternalSegment(tx, req)
+		proxyReq.Headers = req.Header
 		defer func() {
 			externalSegment.End()
-			closer(requestToBackend)
+			if req.Body != nil {
+				req.Body.Close()
+			}
 		}()
+
+		resp, err := next(ctx, proxyReq)
+		externalSegment.SetStatusCode(resp.Metadata.StatusCode)
 
 		return resp, err
 	}
 }
 
-func toHttpRequest(req *proxy.Request) (*http.Request, func(r *http.Request), error) {
+func toHttpRequest(req *proxy.Request) (*http.Request, error) {
 	requestToBackend, err := http.NewRequest(strings.ToTitle(req.Method), req.URL.String(), req.Body)
 	if err != nil {
-		return nil, func(r *http.Request) {
-
-		}, err
+		return nil, err
 	}
 	requestToBackend.Header = make(map[string][]string, len(req.Headers))
 	for k, vs := range req.Headers {
@@ -73,9 +73,5 @@ func toHttpRequest(req *proxy.Request) (*http.Request, func(r *http.Request), er
 		}
 	}
 
-	return requestToBackend, func(r *http.Request) {
-		if r.Body != nil {
-			r.Body.Close()
-		}
-	}, nil
+	return requestToBackend, nil
 }

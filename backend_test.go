@@ -47,14 +47,16 @@ func TestBackendFactory(t *testing.T) {
 				segmentName: "segment1",
 				nextFactory: func(remote *config.Backend) proxy.Proxy {
 					return func(ctx context.Context, request *proxy.Request) (*proxy.Response, error) {
-						return &proxy.Response{}, nil
+						return &proxy.Response{
+							Metadata: proxy.Metadata{StatusCode: 200},
+						}, nil
 					}
 				},
 			},
 			app: func() *Application {
 				return &Application{
 					TransactionManager: func() TransactionManager {
-						seg := NewMockTransactionEnder(ctrl)
+						seg := NewMockTransactionEndStatusCodeSetter(ctrl)
 						tx := NewMockTransaction(ctrl)
 						tp := NewMockTransactionManager(ctrl)
 
@@ -65,6 +67,9 @@ func TestBackendFactory(t *testing.T) {
 						tp.EXPECT().StartExternalSegment(tx, gomock.Any()).
 							Times(1).
 							Return(seg)
+
+						seg.EXPECT().SetStatusCode(200).
+							Times(1)
 
 						seg.EXPECT().End().
 							Times(1)
