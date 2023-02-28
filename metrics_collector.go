@@ -47,13 +47,22 @@ type Transaction interface {
 	GetLinkingMetadata() newrelic.LinkingMetadata
 }
 
+type TransactionEndStatusCodeSetter interface {
+	TransactionEnder
+	StatusCodeSetter
+}
+
 type TransactionEnder interface {
 	End()
 }
 
+type StatusCodeSetter interface {
+	SetStatusCode(code int)
+}
+
 type TransactionManager interface {
 	TransactionFromContext(ctx context.Context) Transaction
-	StartExternalSegment(txn Transaction, request *http.Request) TransactionEnder
+	StartExternalSegment(txn Transaction, request *http.Request) TransactionEndStatusCodeSetter
 }
 
 type Application struct {
@@ -98,7 +107,6 @@ func Register(
 		cfg, func() (NRApplication, error) {
 			return newrelic.NewApplication(
 				newrelic.ConfigFromEnvironment(),
-				newrelic.ConfigAppLogDecoratingEnabled(true),
 			)
 		},
 		newrelicWrapper{},
@@ -138,7 +146,7 @@ func NewApp(
 type newrelicWrapper struct {
 }
 
-func (t newrelicWrapper) StartExternalSegment(txn Transaction, request *http.Request) TransactionEnder {
+func (t newrelicWrapper) StartExternalSegment(txn Transaction, request *http.Request) TransactionEndStatusCodeSetter {
 	return newrelic.StartExternalSegment(txn.(*newrelic.Transaction), request)
 }
 
