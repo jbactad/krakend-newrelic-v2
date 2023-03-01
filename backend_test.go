@@ -2,6 +2,8 @@ package metrics
 
 import (
 	"context"
+	"errors"
+	"net/http"
 	"net/url"
 	"testing"
 
@@ -126,6 +128,58 @@ func TestBackendFactory(t *testing.T) {
 				}
 			}(),
 			wantErr: assert.NoError,
+		},
+		{
+			name: "given error from proxy, it should not set external transaction status code",
+			args: args{
+				request: &proxy.Request{
+					Method: "GET",
+					URL: func() *url.URL {
+						u, err := url.Parse("http://localhost:8080/some-endpoint")
+						if err != nil {
+							t.Fatal(err)
+						}
+
+						return u
+					}(),
+				},
+			},
+			fields: fields{
+				segmentName: "segment1",
+				nextFactory: func(remote *config.Backend) proxy.Proxy {
+					return func(ctx context.Context, request *proxy.Request) (*proxy.Response, error) {
+						return nil, errors.New("something happened")
+					}
+				},
+			},
+			app: func() *Application {
+				return &Application{
+					TransactionManager: func() TransactionManager {
+						seg := NewMockTransactionEndStatusCodeSetter(ctrl)
+						tx := NewMockTransaction(ctrl)
+						tp := NewMockTransactionManager(ctrl)
+
+						tp.EXPECT().TransactionFromContext(gomock.AssignableToTypeOf(context.Background())).
+							Times(1).
+							Return(tx)
+
+						tp.EXPECT().StartExternalSegment(tx, gomock.AssignableToTypeOf(&http.Request{})).
+							Times(1).
+							Return(seg)
+
+						seg.EXPECT().SetStatusCode(200).
+							Times(0)
+
+						seg.EXPECT().End().
+							Times(1)
+
+						return tp
+					}(),
+					NRApplication: NewMockNRApplication(ctrl),
+					Config:        Config{},
+				}
+			}(),
+			wantErr: assert.Error,
 		},
 	}
 	for _, tt := range tests {

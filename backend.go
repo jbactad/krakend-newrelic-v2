@@ -48,7 +48,9 @@ func NewBackend(segmentName string, next proxy.Proxy) proxy.Proxy {
 		}()
 
 		resp, err := next(ctx, proxyReq)
-		externalSegment.SetStatusCode(resp.Metadata.StatusCode)
+		if err == nil {
+			externalSegment.SetStatusCode(resp.Metadata.StatusCode)
+		}
 
 		return resp, err
 	}
